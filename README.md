@@ -21,7 +21,7 @@ pull request.
 
 ## License
 
-This project is licensed under the [GNU License](LICENSE).
+This project is licensed under the [GPL-3.0 license](LICENSE).
 
 ## Acknowledgments
 my friend [@olios](https://github.com/ArielWy) for the idea and the code for the gallery generation.

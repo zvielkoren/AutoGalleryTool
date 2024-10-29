@@ -55,7 +55,7 @@ pull request.
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GPL-3.0 license](LICENSE).
 
 ## Acknowledgments
 my friend [@olios](https://github.com/ArielWy) for the idea and the code for the gallery generation.
