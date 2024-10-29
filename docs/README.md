@@ -1,5 +1,6 @@
 # AutoGalleryTool Documentation
 
+![AutoGalleryTool_Icon.png](../assets/icons/AutoGalleryTool_Icon.png "The Image for the app")
 ## Introduction
 
 The AutoGalleryTool is a Python script designed to automate the process of creating a gallery of images from a specified

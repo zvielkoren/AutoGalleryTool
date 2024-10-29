@@ -1,6 +1,7 @@
 """
 Detects connected external removable devices by checking available drive letters.
 
+
 Returns:
     list: A list of connected removable devices.
 """
@@ -79,7 +80,7 @@ class DeviceDetector:
                 logger.warning(f"Could not determine drive type for {drive}")
                 return False
 
-            is_removable = drive_type == "2"  # '2' indicates a removable drive
+            is_removable = drive_type == self.removable_drive_type  # '2' indicates a removable drive
             logger.debug(f"Drive {drive} type: {drive_type}, is removable: {is_removable}")
             return is_removable
         except subprocess.CalledProcessError as e:

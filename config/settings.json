@@ -1,0 +1,20 @@
+
+{
+    "device_detection": {
+        "ignore_drives": ["C:", "D:"],
+        "removable_drive_type": "2"
+    },
+    "source_dir": "C:\\Users\\Default\\Pictures\\Source",
+    "destination_dir": "C:\\Users\\Default\\Pictures\\Destination",
+    "file_extensions": {
+        "images": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
+        "videos": [".mp4", ".mov", ".avi", ".wmv"]
+    },
+    "gallery_settings": {
+        "thumbnail_size": {
+            "width": 200,
+            "height": 200
+        },
+        "columns": 4
+    }
+}
