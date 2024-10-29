@@ -17,4 +17,52 @@ presenting your image collection.
   - **Flexible Output**: The generated HTML gallery can be easily integrated into your website or shared with others.
 
 ## Getting Started
- soon..
+ 
+### Prerequisites
+  
+- Python 3.x
+- pip (Python package manager)
+- Optional: A web server (e.g., Apache, Nginx) for hosting the generated HTML gallery
+
+### Installation
+
+1. Clone the repository:
+  ```bash
+  git clone https://github.com/your-username/AutoGalleryTool.git
+  ```
+
+2. Install the required
+   dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run the script:
+   ```bash
+   python main.py
+   ```
+4. Follow the instructions in the terminal to select the directory and configure the gallery settings.
+5. The generated HTML gallery will be saved in the `output` directory.
+6. To run the script in the background, you can use a tool like `screen` or `tmux`.
+
+## Important Files:
+  the settings file [settings.json](../config/settings.json)
+
+
+## Contributing
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a
+pull request.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Acknowledgments
+my friend [@olios](https://github.com/ArielWy) for the idea and the code for the gallery generation.
+
+## Contact
+
+For questions or inquiries, please contact [business@zvielkoren.com](mailto:business@zvielkoren.com).
+
+
+  
