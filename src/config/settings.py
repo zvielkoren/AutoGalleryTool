@@ -3,7 +3,7 @@ import os
 
 
 class SettingsManager:
-    def __init__(self, settings_file="settings.json"):
+    def __init__(self, settings_file="../config/settings.json"):
         self.settings_file = settings_file
         self.settings = self.load_settings()
 

@@ -9,7 +9,7 @@ import os
 import string
 import subprocess
 import logging
-from config.settings import SettingsManager
+from src.config.settings import SettingsManager
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -20,9 +20,10 @@ logger = logging.getLogger(__name__)
 class DeviceDetector:
     def __init__(self):
         logger.info("Initializing DeviceDetector")
-        self.settings_manager = SettingsManager
-        self.ignore_drives = self.settings_manager.get_setting("device_detection")["ignore_drives"]
-        self.removable_drive_type = self.settings_manager.get_setting("device_detection")["removable_drive_type"]
+        self.settings_manager = SettingsManager()  # Create an instance
+        settings = self.settings_manager.get_setting("device_detection")
+        self.ignore_drives = settings["ignore_drives"]
+        self.removable_drive_type = settings["removable_drive_type"]
 
     def detect_devices(self):
         """Detects connected external removable devices by checking available drive letters.

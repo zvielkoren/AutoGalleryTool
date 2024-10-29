@@ -3,15 +3,15 @@ This module provides a class for sorting files in a directory based on their fil
 
 Classes:
     FileSorter: A class for sorting files in a directory based on their file extension.
-    Methods:
-        sort_files(self): Sorts files in the source directory into the destination directory based on file extension.
-        move_file(self, filename): Moves a file from the source directory to the destination directory.
-        check_file_extension(self, filename): Checks if a file has a valid file extension.
+Methods:
+    sort_files(self): Sorts files in the source directory into the destination directory based on file extension.
+    move_file(self, filename): Moves a file from the source directory to the destination directory.
+    check_file_extension(self, filename): Checks if a file has a valid file extension.
 
 
-    Usage:
-        sorter = FileSorter("source_dir", "destination_dir")
-        sorter.sort_files()
+Usage:
+    sorter = FileSorter("source_dir", "destination_dir")
+    sorter.sort_files()
 
 Example:
         sorter = FileSorter("source_dir", "destination_dir")
@@ -20,13 +20,13 @@ Example:
     Note:
         This module requires the 'os' module for file operations.
         It also requires the 'shutil' module for file operations.
-It also requires the 'json' module for loading and saving settings.
+        It also requires the 'json' module for loading and saving settings.
 """
 
 import os
 import shutil
 
-from config.settings import SettingsManager
+from src.config.settings import SettingsManager
 
 
 class FileSorter:
