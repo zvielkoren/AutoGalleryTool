@@ -5,7 +5,7 @@ The AutoGalleryTool system is an automated solution for sharing media files, all
 ## Features
 
 - **Automated Image Collection**: The script automatically collects all image files from the specified directory.
-- **Gallery Generation**: It generates an HTML gallery with thumbnails of the images, allowing easy navigation and
+- **Gallery Generation**: It generates an HTML gallery with thumbnails of the images, allowing easy navigation and selection.
 - **Customization**: You can customize the gallery layout, including the number of columns and the thumbnail size.
     - **User-Friendly Interface**: The script provides a user-friendly interface for selecting the directory and configuring
       the gallery settings.

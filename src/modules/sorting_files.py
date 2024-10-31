@@ -26,7 +26,7 @@ Example:
 import os
 import shutil
 
-from src.config.settings import SettingsManager
+from config.settings import SettingsManager
 
 
 class FileSorter:
@@ -44,11 +44,11 @@ class FileSorter:
 
     """
     def __init__(self, source_dir, destination_dir):
-        self.settings_manager = SettingsManager
 
-        self.source_dir = self.settings_manager.get_setting("source_dir")
-        self.destination_dir = self.settings_manager.get_setting("destination_dir")
-        self.files_extensions = self.settings_manager.get_setting("files_extensions")
+        self.settings_manager = SettingsManager()  # Create an instance
+        self.source_dir = source_dir
+        self.destination_dir = destination_dir
+        self.files_extensions = None
 
     def sort_files(self):
         """

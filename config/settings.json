@@ -4,8 +4,8 @@
         "ignore_drives": ["C:", "D:"],
         "removable_drive_type": "2"
     },
-    "source_dir": "C:\\Users\\Default\\Pictures\\Source",
-    "destination_dir": "C:\\Users\\Default\\Pictures\\Destination",
+    "source_dir": "C:\\Users\\zvicr\\Pictures\\2024\\2024-07-29",
+    "destination_dir": "C:\\Users\\zvicr\\Pictures\\output",
     "file_extensions": {
         "images": [".jpg", ".jpeg", ".png", ".gif", ".bmp"],
         "videos": [".mp4", ".mov", ".avi", ".wmv"]
