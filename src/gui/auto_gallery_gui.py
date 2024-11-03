@@ -62,7 +62,8 @@ class AutoGalleryGUI:
             print(f"Error loading icon: {e}")
 
         self.setup_logging()
-        self.update_status()    def sync_config(self):
+        self.update_status()
+    def sync_config(self):
         """Sync current GUI state with config file"""
         self.settings.config.source_dirs = [Path(d) for d in self.source_dirs]
         self.settings.config.destination_dir = Path(self.destination_dir.get())
@@ -239,31 +240,36 @@ class AutoGalleryGUI:
     def start_processing(self):
         """Start processing images in a separate thread"""
         try:
-            # Check if source directories exist
-            if not self.source_dirs:
-                tk.messagebox.showinfo("Select Source", "Please add at least one source directory first")
+            # Load current settings
+            config = self.settings.load_settings()
 
-                self.add_source_dir()  # Open directory selection dialog
+            # Check if source directories exist and are set
+            if not config.source_dirs or not any(Path(src).exists() for src in config.source_dirs):
+                tk.messagebox.showinfo("Configuration Required", "Please configure source directories first")
+                self.show_settings_dialog()
                 return
 
-            config = self.create_config()
             self.processor = ImageProcessor(config)
             self.start_btn["state"] = "disabled"
             self.stop_btn["state"] = "normal"
+
             def process_thread():
                 try:
                     # Process existing files
                     for source_dir in config.source_dirs:
-                        for file_path in Path(source_dir).glob('*'):
-                            if file_path.is_file():
-                                self.processor.organize_image(file_path)
+                        source_path = Path(source_dir)
+                        if source_path.exists():
+                            for file_path in source_path.glob('*'):
+                                if file_path.is_file():
+                                    self.processor.organize_image(file_path)
 
                     # Start watching for new files
                     observer = Observer()
                     event_handler = FileWatcher(self.processor)
 
                     for source_dir in config.source_dirs:
-                        observer.schedule(event_handler, str(source_dir), recursive=False)
+                        if Path(source_dir).exists():
+                            observer.schedule(event_handler, str(source_dir), recursive=False)
 
                     observer.start()
 
@@ -277,8 +283,6 @@ class AutoGalleryGUI:
 
         except ValueError as e:
             messagebox.showerror("Configuration Error", str(e))
-        except Exception as e:
-            messagebox.showerror("Error", f"Unexpected error: {str(e)}")
 
     def stop_processing(self):
         if self.processor and self.processor.observer:
