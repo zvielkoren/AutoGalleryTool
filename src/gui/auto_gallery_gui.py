@@ -237,44 +237,46 @@ class AutoGalleryGUI:
         return config
 
     def start_processing(self):
-        self.start_btn["state"] = "disabled"
-        self.stop_btn["state"] = "normal"
-
+        """Start processing images in a separate thread"""
         try:
+            # Check if source directories exist
+            if not self.source_dirs:
+                tk.messagebox.showinfo("Select Source", "Please add at least one source directory first")
+                self.add_source_dir()  # Open directory selection dialog
+                return
+
             config = self.create_config()
             self.processor = ImageProcessor(config)
 
             def process_thread():
                 try:
+                    # Process existing files
                     for source_dir in config.source_dirs:
                         for file_path in Path(source_dir).glob('*'):
                             if file_path.is_file():
                                 self.processor.organize_image(file_path)
 
+                    # Start watching for new files
                     observer = Observer()
                     event_handler = FileWatcher(self.processor)
 
                     for source_dir in config.source_dirs:
                         observer.schedule(event_handler, str(source_dir), recursive=False)
 
-                    self.processor.observer = observer
                     observer.start()
 
                 except Exception as e:
                     logging.error(f"Error during processing: {str(e)}")
                     messagebox.showerror("Error", f"Processing error: {str(e)}")
 
+            # Start processing thread
             threading.Thread(target=process_thread, daemon=True).start()
             logging.info("Started processing images...")
 
         except ValueError as e:
             messagebox.showerror("Configuration Error", str(e))
-            self.start_btn["state"] = "normal"
-            self.stop_btn["state"] = "disabled"
         except Exception as e:
             messagebox.showerror("Error", f"Unexpected error: {str(e)}")
-            self.start_btn["state"] = "normal"
-            self.stop_btn["state"] = "disabled"
 
     def stop_processing(self):
         if self.processor and self.processor.observer:
