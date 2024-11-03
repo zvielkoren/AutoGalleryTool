@@ -126,47 +126,28 @@ class SettingsDialog(tk.Toplevel):
 
 
     def save_settings(self):
-         try:
-             # Validate backup settings
-             if self.backup_enabled.get() and not self.backup_path.get():
-                 tk.messagebox.showwarning("Validation", "Please select a backup location when backup is enabled")
-                 return
+        try:
 
-             # Validate source directories
-             if self.source_listbox.size() == 0:
-                 tk.messagebox.showwarning("Validation", "Please add at least one source directory")
-                 return
+            # Update config with current values
+            self.settings.config.source_dirs = [Path(d) for d in self.source_dirs]
+            self.settings.config.destination_dir = Path(self.destination_dir.get())
+            self.settings.config.create_thumbnails = self.create_thumbnails.get()
+            self.settings.config.organize_by_date = self.organize_by_date.get()
+            self.settings.config.organize_by_type = self.organize_by_type.get()
+            self.settings.config.backup_enabled = self.backup_enabled.get()
+            self.settings.config.backup_location = Path(self.backup_location.get()) if self.backup_location.get() else None
+            self.settings.config.organization_prompt = self.organization_prompt.get()
+            self.settings.config.custom_prompt = self.custom_prompt.get()
 
-             # Continue with saving if validation passes
-             source_dirs = [Path(self.source_listbox.get(i))
-                           for i in range(self.source_listbox.size())]
-             self.settings.config.source_dirs = source_dirs
-             self.settings.config.backup_enabled = self.backup_enabled.get()
-             self.settings.config.backup_location = Path(self.backup_path.get()) if self.backup_path.get() else None
+                      # Save to file
+            self.settings.save_settings()
 
-             # Update destination directory
-             self.settings.config.destination_dir = Path(self.dest_dir.get())
+                      # Update main window config
+            self.master.config = self.settings.config
 
-             # Update other settings
-             self.settings.config.organize_by_date = self.organize_by_date.get()
-             self.settings.config.organize_by_type = self.organize_by_type.get()
-             self.settings.config.create_thumbnails = self.create_thumbnails.get()
-             self.settings.config.organization_prompt = self.organization_prompt.get()
 
-             # Update thumbnail size
-             width = int(self.thumbnail_width.get())
-             height = int(self.thumbnail_height.get())
-             self.settings.config.thumbnail_size = (width, height)
-
-             # Update file extensions
-             extensions = {ext.strip() for ext in self.file_extensions.get().split(",")}
-             self.settings.config.file_extensions = extensions
-
-             self.settings.save_settings()
-             self.destroy()
-
-         except ValueError as e:
-             tk.messagebox.showerror("Error", str(e))
+        except Exception as e:
+          tk.messagebox.showerror("Save Error", f"Could not save settings: {str(e)}")
 
 
     def choose_backup(self):

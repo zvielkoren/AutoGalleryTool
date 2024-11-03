@@ -321,3 +321,8 @@ class AutoGalleryGUI:
     def sync_config(self):
         self.settings.config.source_dirs = [Path(d) for d in self.source_dirs]
         self.settings.save_settings()
+
+    def destroy(self):
+        self.stop_processing()
+        self.settings.save_settings()
+        super().destroy()

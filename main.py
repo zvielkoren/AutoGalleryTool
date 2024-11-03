@@ -5,6 +5,7 @@ def main():
     root = tk.Tk()
     app = AutoGalleryGUI(root)
     root.mainloop()
+    app.destroy()
 
 if __name__ == "__main__":
     main()
