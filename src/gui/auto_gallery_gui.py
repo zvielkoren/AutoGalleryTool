@@ -27,34 +27,29 @@ class AutoGalleryGUI:
         return base_path / "assets" / "icons"
 
     def __init__(self, root: tk.Tk):
-        self.source_listbox = None
         self.root = root
         self.root.title("AutoGallery Tool")
         self.root.geometry("600x700")
 
-        # Initialize variables
-        self.source_dirs = set()
-        self.destination_dir = tk.StringVar()
-        self.create_thumbnails = tk.BooleanVar(value=True)
-        self.organize_by_date = tk.BooleanVar(value=True)
-        self.organize_by_type = tk.BooleanVar(value=True)
-        self.backup_enabled = tk.BooleanVar(value=False)
-        self.backup_location = tk.StringVar()
-        self.organization_prompt = tk.StringVar(value="{main}, {date:YYYY/MM}, {type}")
+        # Initialize settings first
+        self.settings = Settings()
+        self.config = self.settings.load_settings()
+
+        # Initialize variables with settings values
+        self.source_dirs = set(str(path) for path in self.config.source_dirs)
+        self.destination_dir = tk.StringVar(value=str(self.config.destination_dir))
+        self.create_thumbnails = tk.BooleanVar(value=self.config.create_thumbnails)
+        self.organize_by_date = tk.BooleanVar(value=self.config.organize_by_date)
+        self.organize_by_type = tk.BooleanVar(value=self.config.organize_by_type)
+        self.backup_enabled = tk.BooleanVar(value=self.config.backup_enabled)
+        self.backup_location = tk.StringVar(value=str(self.config.backup_location) if self.config.backup_location else "")
+        self.organization_prompt = tk.StringVar(value=self.config.organization_prompt)
         self.custom_prompt = tk.StringVar()
         self.status_queue = Queue()
         self.processor = None
 
-        # Initialize settings
-        self.settings = Settings()
-        self.config = self.settings.load_settings()
-
-        # Create GUI elements including source_listbox
+        # Create GUI elements
         self.create_widgets()
-
-        # Now update the listbox after it's created
-        if hasattr(self, 'source_listbox'):
-            self.update_source_listbox()
 
         # Load icons
         icon_path = self.get_resource_path() / "AutoGalleryTool_Icon.png"
@@ -67,9 +62,7 @@ class AutoGalleryGUI:
             print(f"Error loading icon: {e}")
 
         self.setup_logging()
-        self.update_status()
-
-    def sync_config(self):
+        self.update_status()    def sync_config(self):
         """Sync current GUI state with config file"""
         self.settings.config.source_dirs = [Path(d) for d in self.source_dirs]
         self.settings.config.destination_dir = Path(self.destination_dir.get())

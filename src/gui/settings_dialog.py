@@ -12,6 +12,9 @@ class SettingsDialog(tk.Toplevel):
         self.title("Settings")
         self.geometry("500x600")
 
+        # Initialize source directories list
+        self.source_dirs = set(str(path) for path in settings.config.source_dirs)
+
         # Variables
         self.thumbnail_width = tk.StringVar(value=str(settings.config.thumbnail_size[0]))
         self.thumbnail_height = tk.StringVar(value=str(settings.config.thumbnail_size[1]))
@@ -22,8 +25,16 @@ class SettingsDialog(tk.Toplevel):
         self.create_thumbnails = tk.BooleanVar(value=settings.config.create_thumbnails)
         self.organization_prompt = tk.StringVar(value=settings.config.organization_prompt)
 
+        # Create widgets
         self.create_widgets()
 
+        # Update listbox with current directories
+        self.update_source_listbox()
+
+    def update_source_listbox(self):
+        self.source_listbox.delete(0, tk.END)
+        for directory in sorted(self.source_dirs):
+            self.source_listbox.insert(tk.END, directory)
     def create_widgets(self):
         # Source Directories Frame
         source_frame = ttk.LabelFrame(self, text="Source Directories", padding=10)
