@@ -43,20 +43,19 @@ class AutoGalleryGUI:
         self.setup_logging()
         self.update_status()
 
-    def save_current_settings(self):
-        """Save current GUI state to settings"""
-        self.config.source_dirs = [Path(d) for d in self.source_dirs]
-        self.config.destination_dir = Path(self.destination_dir.get())
-        self.config.create_thumbnails = self.create_thumbnails.get()
-        self.config.organize_by_date = self.organize_by_date.get()
-        self.config.organize_by_type = self.organize_by_type.get()
-        self.config.backup_enabled = self.backup_enabled.get()
-        self.config.backup_location = Path(self.backup_location.get()) if self.backup_location.get() else None
-        self.config.organization_prompt = self.organization_prompt.get()
-        self.config.custom_prompt = self.custom_prompt.get() if self.custom_prompt.get() else None
+    def sync_config(self):
+        """Sync current GUI state with config file"""
+        self.settings.config.source_dirs = [Path(d) for d in self.source_dirs]
+        self.settings.config.destination_dir = Path(self.destination_dir.get())
+        self.settings.config.create_thumbnails = self.create_thumbnails.get()
+        self.settings.config.organize_by_date = self.organize_by_date.get()
+        self.settings.config.organize_by_type = self.organize_by_type.get()
+        self.settings.config.backup_enabled = self.backup_enabled.get()
+        self.settings.config.backup_location = Path(self.backup_location.get()) if self.backup_location.get() else None
+        self.settings.config.organization_prompt = self.organization_prompt.get()
+        self.settings.config.custom_prompt = self.custom_prompt.get() if self.custom_prompt.get() else None
 
         self.settings.save_settings()
-
     def create_widgets(self):
         # Organization Pattern Frame
         pattern_frame = ttk.LabelFrame(self.root, text="Organization Pattern", padding=10)
@@ -117,6 +116,18 @@ class AutoGalleryGUI:
             btn = ttk.Button(quick_frame, text=label,
                              command=lambda f=fmt: self.custom_prompt.set(f))
             btn.pack(side=tk.LEFT, padx=2)
+        # Progress Frame
+        progress_frame = ttk.LabelFrame(self.root, text="Progress", padding=10)
+        progress_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+        # Create text widget with scrollbar
+        self.log_text = tk.Text(progress_frame, height=10, width=50)
+        scrollbar = ttk.Scrollbar(progress_frame, orient="vertical",
+                                  command=self.log_text.yview)
+        self.log_text.configure(yscrollcommand=scrollbar.set)
+
+        self.log_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
         # Control Buttons
         control_frame = ttk.Frame(self.root)
@@ -253,5 +264,6 @@ class AutoGalleryGUI:
 
         self.start_btn["state"] = "normal"
         self.stop_btn["state"] = "disabled"
+
 
 

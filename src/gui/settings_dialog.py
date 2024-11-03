@@ -1,4 +1,5 @@
 import tkinter as tk
+from pathlib import Path
 from tkinter import ttk, filedialog, messagebox
 from typing import Tuple
 from ..utils.settings import Settings
@@ -8,19 +9,19 @@ class SettingsDialog(tk.Toplevel):
         super().__init__(parent)
         self.settings = settings
         self.title("Settings")
-        self.geometry("400x500")
-
-        # Make dialog modal
-        self.transient(parent)
-        self.grab_set()
+        self.geometry("500x600")
 
         # Variables
         self.thumbnail_width = tk.StringVar(value=str(settings.config.thumbnail_size[0]))
         self.thumbnail_height = tk.StringVar(value=str(settings.config.thumbnail_size[1]))
         self.file_extensions = tk.StringVar(value=", ".join(settings.config.file_extensions))
+        self.dest_dir = tk.StringVar(value=str(settings.config.destination_dir))
+        self.organize_by_date = tk.BooleanVar(value=settings.config.organize_by_date)
+        self.organize_by_type = tk.BooleanVar(value=settings.config.organize_by_type)
+        self.create_thumbnails = tk.BooleanVar(value=settings.config.create_thumbnails)
+        self.organization_prompt = tk.StringVar(value=settings.config.organization_prompt)
 
         self.create_widgets()
-
     def create_widgets(self):
         # Source Directories Frame
         source_frame = ttk.LabelFrame(self, text="Source Directories", padding=10)
@@ -74,7 +75,9 @@ class SettingsDialog(tk.Toplevel):
     def add_source_dir(self):
         directory = filedialog.askdirectory()
         if directory:
-            self.source_listbox.insert(tk.END, directory)
+            self.source_dirs.add(directory)
+            self.update_source_listbox()
+            self.sync_config()
 
     def remove_source_dir(self):
         selection = self.source_listbox.curselection()
@@ -87,6 +90,25 @@ class SettingsDialog(tk.Toplevel):
             self.dest_dir.set(directory)
     def save_settings(self):
         try:
+            # Validate source directories
+            if self.source_listbox.size() == 0:
+                tk.messagebox.showwarning("Validation", "Please add at least one source directory")
+                return
+
+            # Continue with saving if validation passes
+            source_dirs = [Path(self.source_listbox.get(i))
+                          for i in range(self.source_listbox.size())]
+            self.settings.config.source_dirs = source_dirs
+
+            # Update destination directory
+            self.settings.config.destination_dir = Path(self.dest_dir.get())
+
+            # Update other settings
+            self.settings.config.organize_by_date = self.organize_by_date.get()
+            self.settings.config.organize_by_type = self.organize_by_type.get()
+            self.settings.config.create_thumbnails = self.create_thumbnails.get()
+            self.settings.config.organization_prompt = self.organization_prompt.get()
+
             # Update thumbnail size
             width = int(self.thumbnail_width.get())
             height = int(self.thumbnail_height.get())
