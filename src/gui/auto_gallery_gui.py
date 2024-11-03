@@ -290,4 +290,28 @@ class AutoGalleryGUI:
 
 
 
+    def add_source_dir(self):
+        directory = filedialog.askdirectory()
+        if directory:
+            self.source_dirs.add(directory)
+            self.update_source_listbox()
+            self.sync_config()
+            logging.info(f"Added source directory: {directory}")
 
+    def remove_source_dir(self):
+        selection = self.source_listbox.curselection()
+        if selection:
+            directory = self.source_listbox.get(selection[0])
+            self.source_dirs.remove(directory)
+            self.update_source_listbox()
+            self.sync_config()
+            logging.info(f"Removed source directory: {directory}")
+
+    def update_source_listbox(self):
+        self.source_listbox.delete(0, tk.END)
+        for directory in sorted(self.source_dirs):
+            self.source_listbox.insert(tk.END, directory)
+
+def sync_config(self):
+    self.settings.config.source_dirs = [Path(d) for d in self.source_dirs]
+    self.settings.save_settings()
