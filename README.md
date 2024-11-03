@@ -11,6 +11,11 @@ The AutoGalleryTool system is an automated solution for sharing media files, all
       the gallery settings.
     - **Flexible Output**: The generated HTML gallery can be easily integrated into your website or shared with others.
 
+
+## Image Gallery
+![screen_1.png](/assets/images/screen_1.png "The Image for the app")
+![settings_screen.png](/assets/images/settings_screen.png "The Image for the settings window")
+
 ### Full Documentation:
 [AutoGalleryTool Documentation](https://github.com/zvielkoren/AutoGalleryTool/wiki)
 
