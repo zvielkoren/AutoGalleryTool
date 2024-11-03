@@ -4,6 +4,7 @@ from tkinter import ttk, filedialog, messagebox
 from typing import Tuple
 from ..utils.settings import Settings
 
+
 class SettingsDialog(tk.Toplevel):
     def __init__(self, parent, settings: Settings):
         super().__init__(parent)
@@ -22,6 +23,7 @@ class SettingsDialog(tk.Toplevel):
         self.organization_prompt = tk.StringVar(value=settings.config.organization_prompt)
 
         self.create_widgets()
+
     def create_widgets(self):
         # Source Directories Frame
         source_frame = ttk.LabelFrame(self, text="Source Directories", padding=10)
@@ -35,9 +37,9 @@ class SettingsDialog(tk.Toplevel):
         source_buttons = ttk.Frame(source_frame)
         source_buttons.pack(fill=tk.X, pady=5)
         ttk.Button(source_buttons, text="Add Directory",
-               command=self.add_source_dir).pack(side=tk.LEFT, padx=5)
+                   command=self.add_source_dir).pack(side=tk.LEFT, padx=5)
         ttk.Button(source_buttons, text="Remove Selected",
-               command=self.remove_source_dir).pack(side=tk.LEFT)
+                   command=self.remove_source_dir).pack(side=tk.LEFT)
 
         # Destination Directory Frame
         dest_frame = ttk.LabelFrame(self, text="Destination Directory", padding=10)
@@ -46,7 +48,7 @@ class SettingsDialog(tk.Toplevel):
         self.dest_dir = tk.StringVar(value=str(self.settings.config.destination_dir))
         ttk.Entry(dest_frame, textvariable=self.dest_dir).pack(side=tk.LEFT, fill=tk.X, expand=True)
         ttk.Button(dest_frame, text="Browse",
-               command=self.choose_destination).pack(side=tk.LEFT, padx=5)
+                   command=self.choose_destination).pack(side=tk.LEFT, padx=5)
 
         # Thumbnail Settings
         thumb_frame = ttk.LabelFrame(self, text="Thumbnail Settings", padding=10)
@@ -93,6 +95,7 @@ class SettingsDialog(tk.Toplevel):
         self.settings.config.backup_location = Path(self.backup_path.get()) if self.backup_path.get() else None
         # ... sync other settings ...
         self.settings.save_settings()
+
     def add_source_dir(self):
         directory = filedialog.askdirectory()
         if directory:
@@ -107,38 +110,56 @@ class SettingsDialog(tk.Toplevel):
         directory = filedialog.askdirectory()
         if directory:
             self.dest_dir.set(directory)
-    def save_settings(self):
-        try:
-            # Validate source directories
-            if self.source_listbox.size() == 0:
-                tk.messagebox.showwarning("Validation", "Please add at least one source directory")
-                return
-
-            # Continue with saving if validation passes
-            source_dirs = [Path(self.source_listbox.get(i))
-                          for i in range(self.source_listbox.size())]
-            self.settings.config.source_dirs = source_dirs
-
-            # Update destination directory
-            self.settings.config.destination_dir = Path(self.dest_dir.get())
-
-            # Update other settings
-            self.settings.config.organize_by_date = self.organize_by_date.get()
-            self.settings.config.organize_by_type = self.organize_by_type.get()
-            self.settings.config.create_thumbnails = self.create_thumbnails.get()
-            self.settings.config.organization_prompt = self.organization_prompt.get()
-
-            # Update thumbnail size
-            width = int(self.thumbnail_width.get())
-            height = int(self.thumbnail_height.get())
-            self.settings.config.thumbnail_size = (width, height)
-
-            # Update file extensions
-            extensions = {ext.strip() for ext in self.file_extensions.get().split(",")}
-            self.settings.config.file_extensions = extensions
-
+            self.settings.config.destination_dir = Path(directory)
             self.settings.save_settings()
-            self.destroy()
 
-        except ValueError as e:
-            tk.messagebox.showerror("Invalid Input", "Please enter valid numbers for thumbnail dimensions")
+
+    def save_settings(self):
+         try:
+             # Validate backup settings
+             if self.backup_enabled.get() and not self.backup_path.get():
+                 tk.messagebox.showwarning("Validation", "Please select a backup location when backup is enabled")
+                 return
+
+             # Validate source directories
+             if self.source_listbox.size() == 0:
+                 tk.messagebox.showwarning("Validation", "Please add at least one source directory")
+                 return
+
+             # Continue with saving if validation passes
+             source_dirs = [Path(self.source_listbox.get(i))
+                           for i in range(self.source_listbox.size())]
+             self.settings.config.source_dirs = source_dirs
+             self.settings.config.backup_enabled = self.backup_enabled.get()
+             self.settings.config.backup_location = Path(self.backup_path.get()) if self.backup_path.get() else None
+
+             # Update destination directory
+             self.settings.config.destination_dir = Path(self.dest_dir.get())
+
+             # Update other settings
+             self.settings.config.organize_by_date = self.organize_by_date.get()
+             self.settings.config.organize_by_type = self.organize_by_type.get()
+             self.settings.config.create_thumbnails = self.create_thumbnails.get()
+             self.settings.config.organization_prompt = self.organization_prompt.get()
+
+             # Update thumbnail size
+             width = int(self.thumbnail_width.get())
+             height = int(self.thumbnail_height.get())
+             self.settings.config.thumbnail_size = (width, height)
+
+             # Update file extensions
+             extensions = {ext.strip() for ext in self.file_extensions.get().split(",")}
+             self.settings.config.file_extensions = extensions
+
+             self.settings.save_settings()
+             self.destroy()
+
+         except ValueError as e:
+             tk.messagebox.showerror("Error", str(e))
+
+
+    def choose_backup(self):
+        directory = filedialog.askdirectory()
+        if directory:
+            self.backup_path.set(directory)
+            self.sync_config()

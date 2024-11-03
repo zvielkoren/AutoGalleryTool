@@ -60,6 +60,7 @@ class ImageProcessor:
             if not metadata:
                 return
 
+            # Get the destination directory path from PhotoOrganizer
             dest_dir = self.photo_organizer.organize_by_prompt(
                 self.config.organization_prompt,
                 metadata,
@@ -67,17 +68,26 @@ class ImageProcessor:
                 self.config.custom_prompt
             )
 
+            # Create destination directory if it doesn't exist
             dest_dir.mkdir(parents=True, exist_ok=True)
+
+            # Create final destination path including filename
             final_dest = dest_dir / source_path.name
-            shutil.copy2(source_path, final_dest)
 
+            # Move file to destination (instead of copy)
+            shutil.move(source_path, final_dest)
+            self.logger.info(f"Moved {source_path} to {final_dest}")
+
+            # Create thumbnail if enabled
             if self.config.create_thumbnails:
-                self._create_thumbnail(source_path, final_dest)
+                self._create_thumbnail(final_dest, final_dest)
 
+            # Backup if enabled
             if self.config.backup_enabled and self.config.backup_location:
                 backup_path = self.config.backup_location / final_dest.relative_to(self.config.destination_dir)
                 backup_path.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(source_path, backup_path)
+                shutil.copy2(final_dest, backup_path)
+                self.logger.info(f"Backed up to {backup_path}")
 
         except Exception as e:
             self.logger.error(f"Error organizing {source_path}: {str(e)}")
