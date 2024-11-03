@@ -323,6 +323,11 @@ class AutoGalleryGUI:
         self.settings.save_settings()
 
     def destroy(self):
-        self.stop_processing()
-        self.settings.save_settings()
+        if self.processor and self.processor.observer:
+            self.processor.observer.stop()
+            self.processor.observer.join()
+            logging.info("Stopped image processing.")
+
+        # Call the parent class destroy method
+        self.root.destroy()
         super().destroy()

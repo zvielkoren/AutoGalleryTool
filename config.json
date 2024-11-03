@@ -1,6 +1,5 @@
 {
     "source_dirs": [
-
     ],
     "destination_dir": ".",
     "organize_by_date": true,
@@ -11,7 +10,7 @@
         200
     ],
     "backup_enabled": false,
-    "backup_location": "",
+    "backup_location": null,
     "organization_prompt": "{main}, {date:YYYY/MM}, {type}",
     "custom_prompt": null
 }
