@@ -78,6 +78,8 @@ class AutoGalleryGUI:
 
         self.settings.save_settings()
     def create_widgets(self):
+
+
         # Organization Pattern Frame
         pattern_frame = ttk.LabelFrame(self.root, text="Organization Pattern", padding=10)
         pattern_frame.pack(fill=tk.X, padx=10, pady=5)
@@ -181,7 +183,6 @@ class AutoGalleryGUI:
     # Add the settings button here
         ttk.Button(options_frame, text="Advanced Settings",
                command=self.show_settings_dialog).pack(anchor=tk.W, pady=5)
-
     def show_settings_dialog(self):
         SettingsDialog(self.root, self.settings)
 
@@ -247,7 +248,8 @@ class AutoGalleryGUI:
 
             config = self.create_config()
             self.processor = ImageProcessor(config)
-
+            self.start_btn["state"] = "disabled"
+            self.stop_btn["state"] = "normal"
             def process_thread():
                 try:
                     # Process existing files
