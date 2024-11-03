@@ -9,3 +9,4 @@ class FileWatcher(FileSystemEventHandler):
     def on_created(self, event):
         if not event.is_directory:
             self.processor.organize_image(Path(event.src_path))
+

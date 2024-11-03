@@ -65,6 +65,21 @@ class SettingsDialog(tk.Toplevel):
         ttk.Label(ext_frame, text="Extensions (comma separated):").pack(anchor=tk.W)
         ttk.Entry(ext_frame, textvariable=self.file_extensions).pack(fill=tk.X, pady=5)
 
+        # Backup Settings
+        backup_frame = ttk.LabelFrame(self, text="Backup Settings", padding=10)
+        backup_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        self.backup_enabled = tk.BooleanVar(value=self.settings.config.backup_enabled)
+        ttk.Checkbutton(backup_frame, text="Enable Backup",
+                        variable=self.backup_enabled,
+                        command=self.sync_config).pack(anchor=tk.W)
+
+        backup_path_frame = ttk.Frame(backup_frame)
+        backup_path_frame.pack(fill=tk.X, pady=5)
+        self.backup_path = tk.StringVar(value=str(self.settings.config.backup_location or ""))
+        ttk.Entry(backup_path_frame, textvariable=self.backup_path).pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(backup_path_frame, text="Browse", command=self.choose_backup).pack(side=tk.LEFT, padx=5)
+
         # Buttons
         btn_frame = ttk.Frame(self)
         btn_frame.pack(fill=tk.X, padx=10, pady=10)
@@ -72,12 +87,16 @@ class SettingsDialog(tk.Toplevel):
         ttk.Button(btn_frame, text="Save", command=self.save_settings).pack(side=tk.LEFT, padx=5)
         ttk.Button(btn_frame, text="Cancel", command=self.destroy).pack(side=tk.LEFT)
 
+    def sync_config(self, *args):
+        """Sync current settings to config file"""
+        self.settings.config.backup_enabled = self.backup_enabled.get()
+        self.settings.config.backup_location = Path(self.backup_path.get()) if self.backup_path.get() else None
+        # ... sync other settings ...
+        self.settings.save_settings()
     def add_source_dir(self):
         directory = filedialog.askdirectory()
         if directory:
-            self.source_dirs.add(directory)
-            self.update_source_listbox()
-            self.sync_config()
+            self.source_listbox.insert(tk.END, directory)
 
     def remove_source_dir(self):
         selection = self.source_listbox.curselection()
