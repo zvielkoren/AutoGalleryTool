@@ -6,6 +6,7 @@ from queue import Queue
 import logging
 from typing import Optional
 from watchdog.observers import Observer
+import sys
 import os
 from .settings_dialog import SettingsDialog
 from ..models.config import GalleryConfig
