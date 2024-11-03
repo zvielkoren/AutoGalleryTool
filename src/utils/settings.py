@@ -60,3 +60,7 @@ class Settings:
             self.destination_dir.set(directory)
             self.save_current_settings()
 
+    def save(self):
+        self.save_settings()
+
+

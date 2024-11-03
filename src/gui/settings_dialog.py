@@ -12,18 +12,34 @@ class SettingsDialog(tk.Toplevel):
         self.title("Settings")
         self.geometry("500x600")
 
-        # Initialize variables
+        # Initialize source directories list
         self.source_dirs = set(str(path) for path in settings.config.source_dirs)
+
+
+        # Variables
+        self.thumbnail_width = tk.StringVar(value=str(settings.config.thumbnail_size[0]))
+        self.thumbnail_height = tk.StringVar(value=str(settings.config.thumbnail_size[1]))
+        self.file_extensions = tk.StringVar(value=", ".join(settings.config.file_extensions))
         self.destination_dir = tk.StringVar(value=str(settings.config.destination_dir))
-        self.create_thumbnails = tk.BooleanVar(value=settings.config.create_thumbnails)
         self.organize_by_date = tk.BooleanVar(value=settings.config.organize_by_date)
         self.organize_by_type = tk.BooleanVar(value=settings.config.organize_by_type)
+        self.create_thumbnails = tk.BooleanVar(value=settings.config.create_thumbnails)
+        self.organization_prompt = tk.StringVar(value=settings.config.organization_prompt)
         self.backup_enabled = tk.BooleanVar(value=settings.config.backup_enabled)
+
         self.backup_location = tk.StringVar(value=str(settings.config.backup_location) if settings.config.backup_location else "")
+
 
         # Create widgets
         self.create_widgets()
 
+        # Update listbox with current directories
+        self.update_source_listbox()
+
+    def update_source_listbox(self):
+        self.source_listbox.delete(0, tk.END)
+        for directory in sorted(self.source_dirs):
+            self.source_listbox.insert(tk.END, directory)
     def create_widgets(self):
         # Source Directories Frame
         source_frame = ttk.LabelFrame(self, text="Source Directories", padding=10)
@@ -45,8 +61,11 @@ class SettingsDialog(tk.Toplevel):
         dest_frame = ttk.LabelFrame(self, text="Destination Directory", padding=10)
         dest_frame.pack(fill=tk.X, padx=10, pady=5)
 
-        ttk.Entry(dest_frame, textvariable=self.destination_dir).pack(side=tk.LEFT, fill=tk.X, expand=True)
-        ttk.Button(dest_frame, text="Browse", command=self.choose_destination).pack(side=tk.LEFT, padx=5)
+        self.dest_dir = tk.StringVar(value=str(self.settings.config.destination_dir))
+        ttk.Entry(dest_frame, textvariable=self.dest_dir).pack(side=tk.LEFT, fill=tk.X, expand=True)
+        ttk.Button(dest_frame, text="Browse",
+                   command=self.choose_destination).pack(side=tk.LEFT, padx=5)
+
         # Thumbnail Settings
         thumb_frame = ttk.LabelFrame(self, text="Thumbnail Settings", padding=10)
         thumb_frame.pack(fill=tk.X, padx=10, pady=5)
@@ -113,46 +132,35 @@ class SettingsDialog(tk.Toplevel):
 
     def save_settings(self):
         try:
-            # Validate backup settings
-            if self.backup_enabled.get() and not self.backup_path.get():
-                tk.messagebox.showwarning("Validation", "Please select a backup location when backup is enabled")
-                return
+            # Get current source directories from listbox
+            source_dirs = []
+            for i in range(self.source_listbox.size()):
+                source_dirs.append(self.source_listbox.get(i))
 
-            # Validate source directories
-            if self.source_listbox.size() == 0:
-                tk.messagebox.showwarning("Validation", "Please add at least one source directory")
-                return
-
-            # Continue with saving if validation passes
-            source_dirs = [Path(self.source_listbox.get(i))
-                           for i in range(self.source_listbox.size())]
-            self.settings.config.source_dirs = source_dirs
-            self.settings.config.backup_enabled = self.backup_enabled.get()
-            self.settings.config.backup_location = Path(self.backup_path.get()) if self.backup_path.get() else None
-
-            # Update destination directory
-            self.settings.config.destination_dir = Path(self.dest_dir.get())
-
-            # Update other settings
+            # Update config with current values
+            self.settings.config.source_dirs = [Path(d) for d in source_dirs]
+            self.settings.config.destination_dir = Path(self.destination_dir.get()) if self.destination_dir.get() else Path()
+            self.settings.config.create_thumbnails = self.create_thumbnails.get()
             self.settings.config.organize_by_date = self.organize_by_date.get()
             self.settings.config.organize_by_type = self.organize_by_type.get()
-            self.settings.config.create_thumbnails = self.create_thumbnails.get()
-            self.settings.config.organization_prompt = self.organization_prompt.get()
+            self.settings.config.backup_enabled = self.backup_enabled.get()
 
-            # Update thumbnail size
-            width = int(self.thumbnail_width.get())
-            height = int(self.thumbnail_height.get())
-            self.settings.config.thumbnail_size = (width, height)
+            if self.backup_enabled.get() and self.backup_location.get():
+                self.settings.config.backup_location = Path(self.backup_location.get())
 
-            # Update file extensions
-            extensions = {ext.strip() for ext in self.file_extensions.get().split(",")}
-            self.settings.config.file_extensions = extensions
+            # Save settings to file
+            self.settings.save()
 
-            self.settings.save_settings()
+            # Show success message
+            tk.messagebox.showinfo("Success", "Settings saved successfully")
+
+            # Close settings dialog
             self.destroy()
 
-        except ValueError as e:
-            tk.messagebox.showerror("Error", str(e))
+        except Exception as e:
+            tk.messagebox.showerror("Save Error", f"Could not save settings: {str(e)}")
+
+
 
 
     def choose_backup(self):
