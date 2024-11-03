@@ -19,23 +19,31 @@ import ctypes
 myappid = 'com.zvielkoren.AutoGalleryTool.1.0' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 class AutoGalleryGUI:
-    def get_resource_path(self, relative_path):
-        if hasattr(sys, '_MEIPASS'):
-            return Path(sys._MEIPASS) / relative_path
-        return Path(__file__).parent.parent.parent / relative_path
+    def get_resource_path(self):
+        if getattr(sys, 'frozen', False):
+            base_path = Path(sys.executable).parent
+        else:
+            base_path = Path(__file__).parent.parent.parent
+        return base_path / "assets" / "icons"
 
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("AutoGallery Tool")
         self.root.geometry("600x700")
 
-        icon_path = self.get_resource_path("assets/icons/AutoGalleryTool_Icon.png")
-        window_icon = tk.PhotoImage(file=str(icon_path))
-        self.root.iconphoto(True, window_icon)
-        self.window_icon = window_icon
-        # Load settings
+        # Initialize settings first
         self.settings = Settings()
         self.config = self.settings.load_settings()
+
+        # Load icons
+        icon_path = self.get_resource_path() / "AutoGalleryTool_Icon.png"
+        try:
+            window_icon = tk.PhotoImage(file=str(icon_path))
+            self.root.iconphoto(True, window_icon)
+            self.window_icon = window_icon
+        except Exception as e:
+            print(f"Icon path: {icon_path}")
+            print(f"Error loading icon: {e}")
 
         # Variables with loaded settings
         self.source_dirs = set(str(path) for path in self.config.source_dirs)
