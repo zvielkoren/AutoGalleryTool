@@ -1,5 +1,7 @@
 import json
 from pathlib import Path
+from tkinter import filedialog
+
 from ..models.config import GalleryConfig
 
 class Settings:
@@ -45,16 +47,16 @@ class Settings:
 
         return self.config
 
-def add_source_dir(self):
-    directory = filedialog.askdirectory()
-    if directory:
-        self.source_dirs.add(directory)
-        self.update_source_listbox()
-        self.save_current_settings()
+    def add_source_dir(self):
+        directory = filedialog.askdirectory()
+        if directory:
+            self.source_dirs.add(directory)
+            self.update_source_listbox()
+            self.save_current_settings()
 
-def choose_destination(self):
-    directory = filedialog.askdirectory()
-    if directory:
-        self.destination_dir.set(directory)
-        self.save_current_settings()
+    def choose_destination(self):
+        directory = filedialog.askdirectory()
+        if directory:
+            self.destination_dir.set(directory)
+            self.save_current_settings()
 

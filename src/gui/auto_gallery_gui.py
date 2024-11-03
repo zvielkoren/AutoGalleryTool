@@ -312,6 +312,6 @@ class AutoGalleryGUI:
         for directory in sorted(self.source_dirs):
             self.source_listbox.insert(tk.END, directory)
 
-def sync_config(self):
-    self.settings.config.source_dirs = [Path(d) for d in self.source_dirs]
-    self.settings.save_settings()
+    def sync_config(self):
+        self.settings.config.source_dirs = [Path(d) for d in self.source_dirs]
+        self.settings.save_settings()
