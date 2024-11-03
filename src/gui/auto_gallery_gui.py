@@ -31,9 +31,26 @@ class AutoGalleryGUI:
         self.root.title("AutoGallery Tool")
         self.root.geometry("600x700")
 
-        # Initialize settings first
+        # Initialize variables
+        self.source_dirs = set()
+        self.destination_dir = tk.StringVar()
+        self.create_thumbnails = tk.BooleanVar(value=True)
+        self.organize_by_date = tk.BooleanVar(value=True)
+        self.organize_by_type = tk.BooleanVar(value=True)
+        self.backup_enabled = tk.BooleanVar(value=False)
+        self.backup_location = tk.StringVar()
+        self.status_queue = Queue()
+        self.processor = None
+
+        # Create GUI elements first
+        self.create_widgets()
+
+        # Initialize settings after widgets are created
         self.settings = Settings()
         self.config = self.settings.load_settings()
+
+        # Update listbox with any saved directories
+        self.update_source_listbox()
 
         # Load icons
         icon_path = self.get_resource_path() / "AutoGalleryTool_Icon.png"
@@ -45,22 +62,9 @@ class AutoGalleryGUI:
             print(f"Icon path: {icon_path}")
             print(f"Error loading icon: {e}")
 
-        # Variables with loaded settings
-        self.source_dirs = set(str(path) for path in self.config.source_dirs)
-        self.destination_dir = tk.StringVar(value=str(self.config.destination_dir))
-        self.create_thumbnails = tk.BooleanVar(value=self.config.create_thumbnails)
-        self.organize_by_date = tk.BooleanVar(value=self.config.organize_by_date)
-        self.organize_by_type = tk.BooleanVar(value=self.config.organize_by_type)
-        self.backup_enabled = tk.BooleanVar(value=self.config.backup_enabled)
-        self.backup_location = tk.StringVar(
-            value=str(self.config.backup_location) if self.config.backup_location else "")
         self.organization_prompt = tk.StringVar(value=self.config.organization_prompt)
         self.custom_prompt = tk.StringVar(value=self.config.custom_prompt if self.config.custom_prompt else "")
 
-        self.status_queue = Queue()
-        self.processor: Optional[ImageProcessor] = None
-
-        self.create_widgets()
         self.setup_logging()
         self.update_status()
 
@@ -183,6 +187,7 @@ class AutoGalleryGUI:
     # Add the settings button here
         ttk.Button(options_frame, text="Advanced Settings",
                command=self.show_settings_dialog).pack(anchor=tk.W, pady=5)
+
     def show_settings_dialog(self):
         SettingsDialog(self.root, self.settings)
 
