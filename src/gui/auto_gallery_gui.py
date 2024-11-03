@@ -18,25 +18,20 @@ import ctypes
 myappid = 'com.zvielkoren.AutoGalleryTool.1.0' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 class AutoGalleryGUI:
+    def get_resource_path(self, relative_path):
+        if hasattr(sys, '_MEIPASS'):
+            return Path(sys._MEIPASS) / relative_path
+        return Path(__file__).parent.parent.parent / relative_path
+
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("AutoGallery Tool")
         self.root.geometry("600x700")
 
-        # Load icons
-        icons_path = Path(__file__).parent.parent.parent / "assets" / "icons"
-
-        # Set window icon
-        window_icon = tk.PhotoImage(file=str(icons_path / "AutoGalleryTool_Icon.png"))
+        icon_path = self.get_resource_path("assets/icons/AutoGalleryTool_Icon.png")
+        window_icon = tk.PhotoImage(file=str(icon_path))
         self.root.iconphoto(True, window_icon)
-
-        # Set taskbar icon
-        if os.name == 'nt':  # Windows
-            self.root.iconbitmap(str(icons_path / "AutoGalleryTool_Icon.ico"))
-
-        # Store icon reference
         self.window_icon = window_icon
-
         # Load settings
         self.settings = Settings()
         self.config = self.settings.load_settings()
