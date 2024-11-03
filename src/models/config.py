@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Set, Tuple
+from typing import Optional, List, Set, Tuple
 
 class GalleryConfig:
     def __init__(self):

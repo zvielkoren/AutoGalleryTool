@@ -1,0 +1,15 @@
+{
+    "source_dirs": [],
+    "destination_dir": ".",
+    "organize_by_date": true,
+    "organize_by_type": true,
+    "create_thumbnails": true,
+    "thumbnail_size": [
+        2000,
+        200
+    ],
+    "backup_enabled": false,
+    "backup_location": null,
+    "organization_prompt": "{main}, {date:YYYY/MM}, {type}",
+    "custom_prompt": null
+}

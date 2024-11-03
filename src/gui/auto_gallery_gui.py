@@ -7,9 +7,12 @@ import logging
 from typing import Optional
 from watchdog.observers import Observer
 
+from .settings_dialog import SettingsDialog
 from ..models.config import GalleryConfig
 from ..core.image_processor import ImageProcessor
 from ..core.file_watcher import FileWatcher
+from ..utils.settings import Settings
+
 
 class AutoGalleryGUI:
     def __init__(self, root: tk.Tk):
@@ -17,22 +20,42 @@ class AutoGalleryGUI:
         self.root.title("AutoGallery Tool")
         self.root.geometry("600x700")
 
-        # Variables
-        self.source_dirs = set()
-        self.destination_dir = tk.StringVar()
-        self.create_thumbnails = tk.BooleanVar(value=True)
-        self.organize_by_date = tk.BooleanVar(value=True)
-        self.organize_by_type = tk.BooleanVar(value=True)
-        self.backup_enabled = tk.BooleanVar(value=False)
-        self.backup_location = tk.StringVar()
-        self.organization_prompt = tk.StringVar(value="{main}, {date:YYYY/MM}, {type}")
-        self.custom_prompt = tk.StringVar()
+        # Load settings
+        self.settings = Settings()
+        self.config = self.settings.load_settings()
+
+        # Variables with loaded settings
+        self.source_dirs = set(str(path) for path in self.config.source_dirs)
+        self.destination_dir = tk.StringVar(value=str(self.config.destination_dir))
+        self.create_thumbnails = tk.BooleanVar(value=self.config.create_thumbnails)
+        self.organize_by_date = tk.BooleanVar(value=self.config.organize_by_date)
+        self.organize_by_type = tk.BooleanVar(value=self.config.organize_by_type)
+        self.backup_enabled = tk.BooleanVar(value=self.config.backup_enabled)
+        self.backup_location = tk.StringVar(
+            value=str(self.config.backup_location) if self.config.backup_location else "")
+        self.organization_prompt = tk.StringVar(value=self.config.organization_prompt)
+        self.custom_prompt = tk.StringVar(value=self.config.custom_prompt if self.config.custom_prompt else "")
+
         self.status_queue = Queue()
         self.processor: Optional[ImageProcessor] = None
 
         self.create_widgets()
         self.setup_logging()
         self.update_status()
+
+    def save_current_settings(self):
+        """Save current GUI state to settings"""
+        self.config.source_dirs = [Path(d) for d in self.source_dirs]
+        self.config.destination_dir = Path(self.destination_dir.get())
+        self.config.create_thumbnails = self.create_thumbnails.get()
+        self.config.organize_by_date = self.organize_by_date.get()
+        self.config.organize_by_type = self.organize_by_type.get()
+        self.config.backup_enabled = self.backup_enabled.get()
+        self.config.backup_location = Path(self.backup_location.get()) if self.backup_location.get() else None
+        self.config.organization_prompt = self.organization_prompt.get()
+        self.config.custom_prompt = self.custom_prompt.get() if self.custom_prompt.get() else None
+
+        self.settings.save_settings()
 
     def create_widgets(self):
         # Organization Pattern Frame
@@ -47,7 +70,7 @@ class AutoGalleryGUI:
 
         for pattern, desc in patterns:
             btn = ttk.Button(pattern_frame, text=desc,
-                           command=lambda p=pattern: self.organization_prompt.set(p))
+                             command=lambda p=pattern: self.organization_prompt.set(p))
             btn.pack(anchor=tk.W, pady=2)
 
         self.prompt_entry = ttk.Entry(pattern_frame, textvariable=self.organization_prompt, width=50)
@@ -92,7 +115,7 @@ class AutoGalleryGUI:
 
         for label, fmt in quick_formats:
             btn = ttk.Button(quick_frame, text=label,
-                           command=lambda f=fmt: self.custom_prompt.set(f))
+                             command=lambda f=fmt: self.custom_prompt.set(f))
             btn.pack(side=tk.LEFT, padx=2)
 
         # Control Buttons
@@ -104,15 +127,31 @@ class AutoGalleryGUI:
         style.configure("Stop.TButton", background="red")
 
         self.start_btn = ttk.Button(control_frame, text="▶ Start Processing",
-                                  command=self.start_processing,
-                                  style="Start.TButton", width=20)
+                                    command=self.start_processing,
+                                    style="Start.TButton", width=20)
         self.start_btn.pack(side=tk.LEFT, padx=5)
 
         self.stop_btn = ttk.Button(control_frame, text="⬛ Stop",
-                                 command=self.stop_processing,
-                                 style="Stop.TButton", width=20)
+                                   command=self.stop_processing,
+                                   style="Stop.TButton", width=20)
         self.stop_btn.pack(side=tk.LEFT)
         self.stop_btn["state"] = "disabled"
+        options_frame = ttk.LabelFrame(self.root, text="Options", padding=10)
+        options_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        ttk.Checkbutton(options_frame, text="Create Thumbnails",
+                        variable=self.create_thumbnails).pack(anchor=tk.W)
+        ttk.Checkbutton(options_frame, text="Organize by Date",
+                        variable=self.organize_by_date).pack(anchor=tk.W)
+        ttk.Checkbutton(options_frame, text="Organize by File Type",
+                        variable=self.organize_by_type).pack(anchor=tk.W)
+
+    # Add the settings button here
+        ttk.Button(options_frame, text="Advanced Settings",
+               command=self.show_settings_dialog).pack(anchor=tk.W, pady=5)
+
+    def show_settings_dialog(self):
+        SettingsDialog(self.root, self.settings)
 
     def setup_logging(self):
         class QueueHandler(logging.Handler):
@@ -214,4 +253,5 @@ class AutoGalleryGUI:
 
         self.start_btn["state"] = "normal"
         self.stop_btn["state"] = "disabled"
+
 
