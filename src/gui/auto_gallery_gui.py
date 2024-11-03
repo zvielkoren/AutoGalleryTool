@@ -27,6 +27,7 @@ class AutoGalleryGUI:
         return base_path / "assets" / "icons"
 
     def __init__(self, root: tk.Tk):
+        self.source_listbox = None
         self.root = root
         self.root.title("AutoGallery Tool")
         self.root.geometry("600x700")
@@ -39,18 +40,21 @@ class AutoGalleryGUI:
         self.organize_by_type = tk.BooleanVar(value=True)
         self.backup_enabled = tk.BooleanVar(value=False)
         self.backup_location = tk.StringVar()
+        self.organization_prompt = tk.StringVar(value="{main}, {date:YYYY/MM}, {type}")
+        self.custom_prompt = tk.StringVar()
         self.status_queue = Queue()
         self.processor = None
 
-        # Create GUI elements first
-        self.create_widgets()
-
-        # Initialize settings after widgets are created
+        # Initialize settings
         self.settings = Settings()
         self.config = self.settings.load_settings()
 
-        # Update listbox with any saved directories
-        self.update_source_listbox()
+        # Create GUI elements including source_listbox
+        self.create_widgets()
+
+        # Now update the listbox after it's created
+        if hasattr(self, 'source_listbox'):
+            self.update_source_listbox()
 
         # Load icons
         icon_path = self.get_resource_path() / "AutoGalleryTool_Icon.png"
@@ -61,9 +65,6 @@ class AutoGalleryGUI:
         except Exception as e:
             print(f"Icon path: {icon_path}")
             print(f"Error loading icon: {e}")
-
-        self.organization_prompt = tk.StringVar(value=self.config.organization_prompt)
-        self.custom_prompt = tk.StringVar(value=self.config.custom_prompt if self.config.custom_prompt else "")
 
         self.setup_logging()
         self.update_status()
@@ -248,6 +249,7 @@ class AutoGalleryGUI:
             # Check if source directories exist
             if not self.source_dirs:
                 tk.messagebox.showinfo("Select Source", "Please add at least one source directory first")
+
                 self.add_source_dir()  # Open directory selection dialog
                 return
 
