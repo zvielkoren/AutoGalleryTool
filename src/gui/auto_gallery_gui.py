@@ -331,3 +331,4 @@ class AutoGalleryGUI:
         # Call the parent class destroy method
         self.root.destroy()
         super().destroy()
+

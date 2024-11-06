@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoGallery Tool</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>AutoGallery Tool</h1>
+        </header>
+        <main>
+            <!-- Convert the tkinter widgets to HTML equivalents -->
+            <section class="organization-pattern">
+                <h2>Organization Pattern</h2>
+                <button onclick="setPattern('{main}, {date:YYYY/MM}, {type}')">Basic - By Date and Type</button>
+                <button onclick="setPattern('{main}, {date:YYYY}, {camera}, {custom:event_%name}')">Advanced - With Camera and Event</button>
+                <button onclick="setPattern('{main}, {tags}, {date:YYYY-MM-DD}')">With Tags</button>
+                <input type="text" id="patternInput" placeholder="Enter organization pattern">
+            </section>
+
+            <section class="options">
+                <h2>Options</h2>
+                <label>
+                    <input type="checkbox" id="createThumbnails"> Create Thumbnails
+                </label>
+                <label>
+                    <input type="checkbox" id="organizeByDate"> Organize by Date
+                </label>
+                <label>
+                    <input type="checkbox" id="organizeByType"> Organize by File Type
+                </label>
+            </section>
+        </main>
+    </div>
+    <script src="/static/js/main.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js');
+        }
+    </script>
+</body>
+</html>
