@@ -6,9 +6,9 @@ import os
 # Add the project root to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.core.image_processor import ImageProcessor
-from src.models.config import GalleryConfig
-from src.utils.settings import Settings
+from core.image_processor import ImageProcessor
+from models.config import GalleryConfig
+from utils.settings import Settings
 
 app = Flask(__name__)
 settings = Settings()

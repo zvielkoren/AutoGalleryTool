@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import Optional
 from datetime import datetime
-from ..models.tokens import TokenType, OrganizationToken
-from ..models.metadata import ImageMetadata
+from models.tokens import TokenType, OrganizationToken
+from models.metadata import ImageMetadata
 
 class PromptParser:
     def __init__(self):

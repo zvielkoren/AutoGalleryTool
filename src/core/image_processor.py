@@ -3,9 +3,9 @@ import shutil
 from pathlib import Path
 from PIL import Image
 import pillow_heif
-from ..models.config import GalleryConfig
-from ..models.metadata import ImageMetadata
-from .photo_organizer import PhotoOrganizer
+from models.config import GalleryConfig
+from models.metadata import ImageMetadata
+from core.photo_organizer import PhotoOrganizer
 from datetime import datetime
 
 class ImageProcessor:

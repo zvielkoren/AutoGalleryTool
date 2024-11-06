@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from tkinter import filedialog
 
-from ..models.config import GalleryConfig
+from models.config import GalleryConfig
 
 class Settings:
     def __init__(self, config_path: Path = Path("config.json")):
