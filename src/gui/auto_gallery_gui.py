@@ -1,3 +1,4 @@
+import ctypes
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import threading
@@ -8,13 +9,13 @@ from typing import Optional
 from watchdog.observers import Observer
 import sys
 import os
-from .settings_dialog import SettingsDialog
-from ..models.config import GalleryConfig
-from ..core.image_processor import ImageProcessor
-from ..core.file_watcher import FileWatcher
-from ..utils.settings import Settings
 
-import ctypes
+from src.gui.settings_dialog import SettingsDialog
+from src.models.config import GalleryConfig
+from src.core.image_processor import ImageProcessor
+from src.core.file_watcher import FileWatcher
+from src.utils.settings import Settings
+
 
 myappid = 'com.zvielkoren.AutoGalleryTool.1.0' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)

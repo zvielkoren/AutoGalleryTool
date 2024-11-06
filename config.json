@@ -1,5 +1,7 @@
 {
-    "source_dirs": [],
+    "source_dirs": [
+        "C:\\Users\\zvicr\\Pictures\\output"
+    ],
     "destination_dir": ".",
     "organize_by_date": true,
     "organize_by_type": true,
