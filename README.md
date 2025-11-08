@@ -9,15 +9,13 @@ Automate collection, organization, and secure sharing of media files.
 > **This project is not yet ready for production use.**  
 > Features and interface may change frequently.
 
-**Website / Demo:** [https://agt.zviel.com/AutoGalleryTool](https://agt.zviel.com/AutoGalleryTool)
+**Website / Demo:** *soon* <!-- [https://agt.zviel.com/AutoGalleryTool](https://agt.zviel.com/AutoGalleryTool) -->
 
 ---
 
 ## Features
 
-- Bulk upload and organize media  
-- Generate secure shareable links  
-- Filter and catalog images easily  
+> Coming soon
 
 ---
 
